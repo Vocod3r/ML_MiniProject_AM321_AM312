@@ -1,0 +1,6 @@
+Model,Validation Accuracy (%),Test Accuracy (%),Training Time (s),Training Samples
+Logistic Regression,90.35,89.87,0.97,6000
+Linear SVM,89.62,89.37,1.87,6000
+RBF SVM,95.68,95.18,5.49,6000
+Polynomial SVM,94.77,94.23,6.97,6000
+Sigmoid SVM,88.77,88.47,3.97,6000

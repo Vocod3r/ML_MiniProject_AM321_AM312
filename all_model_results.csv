@@ -1,0 +1,32 @@
+Model,Validation Accuracy (%),Test Accuracy (%),Training Time (s),Training Samples,Classes,Person
+CNN V1 (grayscale),96.8,96.37,31.22,6000,3,B
+CNN V1 (binarized),96.55,96.32,33.68,6000,3,B
+CNN V2 (grayscale),96.48,96.32,19.8,6000,3,B
+CNN V2 (binarized),96.07,95.8,21.13,6000,3,B
+CNN V3 (grayscale),95.72,95.23,33.13,6000,3,B
+CNN V4 (grayscale),95.68,95.22,29.43,6000,3,B
+RBF SVM,95.68,95.18,5.49,6000,3,A
+CNN V3 (binarized),95.4,95.17,31.8,6000,3,B
+CNN V4 (binarized),95.42,95.0,30.71,6000,3,B
+Polynomial SVM,94.77,94.23,6.97,6000,3,A
+Logistic Regression,90.35,89.87,0.97,6000,3,A
+Linear SVM,89.62,89.37,1.87,6000,3,A
+Sigmoid SVM,88.77,88.47,3.97,6000,3,A
+CNN V1 (grayscale),86.13,86.34,58.13,6000,10,B
+CNN V1 (binarized),85.07,85.45,60.13,6000,10,B
+CNN V2 (grayscale),84.25,84.79,35.72,6000,10,B
+CNN V2 (binarized),83.94,84.24,35.56,6000,10,B
+CNN V3 (grayscale),82.71,83.18,57.68,6000,10,B
+CNN V4 (grayscale),82.55,82.78,33.75,6000,10,B
+Polynomial SVM,82.29,82.63,9.83,6000,10,A
+RBF SVM,82.18,82.57,7.28,6000,10,A
+CNN V3 (binarized),81.52,81.96,53.61,6000,10,B
+CNN V4 (binarized),81.08,81.52,31.53,6000,10,B
+Sigmoid SVM,71.25,71.19,7.4,6000,10,A
+Logistic Regression,69.3,69.64,3.67,6000,10,A
+Linear SVM,65.59,65.42,5.16,6000,10,A
+RBF SVM,50.32,50.51,16.65,6000,50,A
+Polynomial SVM,50.19,50.39,25.34,6000,50,A
+Sigmoid SVM,38.85,39.06,14.79,6000,50,A
+Logistic Regression,32.72,32.76,9.73,6000,50,A
+Linear SVM,25.27,25.21,28.82,6000,50,A
