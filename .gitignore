@@ -1,8 +1,21 @@
+# Python virtual environments
 venv/
 .venv/
+
+# Python cache files
 __pycache__/
 *.py[cod]
+
+# Dataset files
 data/*.npz
+
+# Jupyter
 .ipynb_checkpoints/
+
+# IDE files
 .vscode/
 .idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db

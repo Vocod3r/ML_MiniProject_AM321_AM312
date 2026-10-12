@@ -1,0 +1,17 @@
+Model,Dataset,Version,Input,Epochs,Batch Size,Learning Rate,Parameters,Training Samples,Classes
+CNN V1 (grayscale),dataset_3classes_n6000,V1,grayscale,15,128,0.001,420739,6000,3
+CNN V1 (binarized),dataset_3classes_n6000,V1,binarized,15,128,0.001,420739,6000,3
+CNN V2 (grayscale),dataset_3classes_n6000,V2,grayscale,15,128,0.001,803651,6000,3
+CNN V2 (binarized),dataset_3classes_n6000,V2,binarized,15,128,0.001,803651,6000,3
+CNN V3 (grayscale),dataset_3classes_n6000,V3,grayscale,15,128,0.001,3212099,6000,3
+CNN V3 (binarized),dataset_3classes_n6000,V3,binarized,15,128,0.001,3212099,6000,3
+CNN V4 (grayscale),dataset_3classes_n6000,V4,grayscale,15,128,0.001,1606211,6000,3
+CNN V4 (binarized),dataset_3classes_n6000,V4,binarized,15,128,0.001,1606211,6000,3
+CNN V1 (grayscale),dataset_10classes_n6000,V1,grayscale,15,128,0.001,421642,6000,10
+CNN V1 (binarized),dataset_10classes_n6000,V1,binarized,15,128,0.001,421642,6000,10
+CNN V2 (grayscale),dataset_10classes_n6000,V2,grayscale,15,128,0.001,804554,6000,10
+CNN V2 (binarized),dataset_10classes_n6000,V2,binarized,15,128,0.001,804554,6000,10
+CNN V3 (grayscale),dataset_10classes_n6000,V3,grayscale,15,128,0.001,3213002,6000,10
+CNN V3 (binarized),dataset_10classes_n6000,V3,binarized,15,128,0.001,3213002,6000,10
+CNN V4 (grayscale),dataset_10classes_n6000,V4,grayscale,15,128,0.001,1606666,6000,10
+CNN V4 (binarized),dataset_10classes_n6000,V4,binarized,15,128,0.001,1606666,6000,10

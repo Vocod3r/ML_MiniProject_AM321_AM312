@@ -1,0 +1,17 @@
+Model,Validation Accuracy (%),Test Accuracy (%),Training Time (s),Training Samples,Classes
+CNN V1 (grayscale),96.8,96.37,31.22,6000,3
+CNN V1 (binarized),96.55,96.32,33.68,6000,3
+CNN V2 (grayscale),96.48,96.32,19.8,6000,3
+CNN V2 (binarized),96.07,95.8,21.13,6000,3
+CNN V3 (grayscale),95.72,95.23,33.13,6000,3
+CNN V3 (binarized),95.4,95.17,31.8,6000,3
+CNN V4 (grayscale),95.68,95.22,29.43,6000,3
+CNN V4 (binarized),95.42,95.0,30.71,6000,3
+CNN V1 (grayscale),86.13,86.34,58.13,6000,10
+CNN V1 (binarized),85.07,85.45,60.13,6000,10
+CNN V2 (grayscale),84.25,84.79,35.72,6000,10
+CNN V2 (binarized),83.94,84.24,35.56,6000,10
+CNN V3 (grayscale),82.71,83.18,57.68,6000,10
+CNN V3 (binarized),81.52,81.96,53.61,6000,10
+CNN V4 (grayscale),82.55,82.78,33.75,6000,10
+CNN V4 (binarized),81.08,81.52,31.53,6000,10
