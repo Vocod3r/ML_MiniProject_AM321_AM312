@@ -1,0 +1,8 @@
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+data/*.npz
+.ipynb_checkpoints/
+.vscode/
+.idea/

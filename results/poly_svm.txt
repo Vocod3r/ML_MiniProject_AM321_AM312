@@ -1,0 +1,7 @@
+Validation Accuracy: 0.9477
+Test Accuracy: 0.9423
+Training Time: 7.05 seconds
+Confusion Matrix:
+[[1914   10   76]
+ [  54 1917   29]
+ [ 152   25 1823]]
