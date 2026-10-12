@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sketch Search</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #EEF2F7;      /* notebook page */
+    --sheet: #FFFFFF;
+    --ink: #1B2A41;        /* navy pen */
+    --ink-soft: #5B6B82;
+    --grid: #D3DEEB;       /* graph-paper lines */
+    --highlight: #FFE45C;  /* highlighter */
+    --miss: #B7C3D3;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font: 17px/1.5 "Atkinson Hyperlegible", system-ui, sans-serif;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 32px 24px 56px; }
+
+  header h1 {
+    font: 800 clamp(40px, 6vw, 64px)/1 "Bricolage Grotesque", system-ui, sans-serif;
+    letter-spacing: -0.02em;
+    margin: 0 0 12px;
+  }
+  header p { margin: 0 0 14px; max-width: 62ch; color: var(--ink-soft); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+  .chips li {
+    background: var(--sheet); border: 1px solid var(--grid); border-radius: 999px;
+    padding: 2px 12px; font-size: 15px;
+  }
+
+  main {
+    display: grid; grid-template-columns: minmax(0, 460px) minmax(0, 1fr);
+    gap: 36px; margin-top: 28px; align-items: start;
+  }
+
+  /* drawing area: a sheet of graph paper */
+  .pad {
+    position: relative; aspect-ratio: 1; width: 100%;
+    background-color: var(--sheet);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 23px 23px;
+    background-position: -1px -1px;
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    overflow: hidden; touch-action: none; cursor: crosshair;
+  }
+  .pad canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .pad .hint {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    color: var(--ink-soft); pointer-events: none; font-size: 18px;
+  }
+  .pad .hint[hidden], [hidden] { display: none !important; }
+  .tools { display: flex; gap: 10px; margin-top: 12px; }
+  button {
+    font: 700 16px "Atkinson Hyperlegible", system-ui, sans-serif;
+    color: var(--ink); background: var(--sheet);
+    border: 2px solid var(--ink); border-radius: 10px;
+    padding: 8px 18px; cursor: pointer;
+  }
+  button:hover { background: var(--paper); }
+  button:disabled { opacity: .4; cursor: default; }
+  button:focus-visible, .pad:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  .tools .note { margin-left: auto; align-self: center; color: var(--ink-soft); font-size: 14px; }
+
+  /* results */
+  .answer { min-height: 0; }
+  .guess {
+    font: 800 clamp(48px, 8vw, 88px)/1 "Bricolage Grotesque", system-ui, sans-serif;
+    letter-spacing: -0.02em; margin: 0;
+    display: inline;
+    background: linear-gradient(transparent 52%, var(--highlight) 52%, var(--highlight) 92%, transparent 92%);
+    padding: 0 6px; margin-left: -6px;
+  }
+  .sure { margin: 10px 0 0; font-size: 18px; }
+  .idle { color: var(--ink-soft); font-size: 20px; max-width: 34ch; margin: 0; }
+
+  .others { margin: 22px 0 0; padding: 0; list-style: none; max-width: 420px; }
+  .others li { display: grid; grid-template-columns: 110px 1fr 74px; gap: 10px; align-items: center; margin: 6px 0; }
+  .bar { height: 10px; background: var(--sheet); border-radius: 5px; overflow: hidden; border: 1px solid var(--grid); }
+  .bar span { display: block; height: 100%; background: var(--ink); }
+  .others .pct { text-align: right; color: var(--ink-soft); font-size: 15px; }
+
+  .seen { display: flex; gap: 14px; align-items: center; margin-top: 22px; color: var(--ink-soft); font-size: 15px; }
+  .seen img { width: 56px; height: 56px; image-rendering: pixelated; border: 1px solid var(--grid); border-radius: 6px; background: var(--sheet); }
+
+  h2 {
+    font: 500 24px/1.2 "Bricolage Grotesque", system-ui, sans-serif;
+    margin: 36px 0 4px;
+  }
+  .vote { margin: 0 0 14px; color: var(--ink-soft); }
+  .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin: 0; padding: 0; list-style: none; }
+  .grid li { margin: 0; }
+  .grid img {
+    display: block; width: 100%; aspect-ratio: 1; image-rendering: pixelated;
+    background: var(--sheet); border: 2px solid var(--ink); border-radius: 8px;
+  }
+  .grid li.other img { border: 2px dashed var(--miss); }
+  .grid span { display: block; font-size: 14px; margin-top: 3px; text-align: center; }
+  .grid li.other span { color: var(--ink-soft); }
+  .error { color: #A23B2A; font-weight: 700; }
+  footer { margin-top: 40px; color: var(--ink-soft); font-size: 14px; }
+
+  @media (max-width: 860px) {
+    main { grid-template-columns: 1fr; }
+    .grid { grid-template-columns: repeat(4, 1fr); }
+    .tools .note { display: none; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .guess { transition: background-size .25s; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Sketch search</h1>
+    <p id="intro">Draw one of these things. The model names your drawing and finds the most similar doodles in the test set.</p>
+    <ul class="chips" id="classes" aria-label="Things the model knows"></ul>
+  </header>
+
+  <main>
+    <section aria-label="Drawing area">
+      <div class="pad" id="pad" tabindex="0" aria-label="Drawing area. Draw with a mouse, finger or pen.">
+        <canvas id="canvas"></canvas>
+        <div class="hint" id="hint">Draw here</div>
+      </div>
+      <div class="tools">
+        <button id="undo" disabled>Undo stroke</button>
+        <button id="clear" disabled>Clear</button>
+        <span class="note">Ctrl + Z also undoes</span>
+      </div>
+    </section>
+
+    <section aria-live="polite">
+      <div class="answer" id="answer">
+        <p class="idle">The model's guess appears here after each stroke you draw.</p>
+      </div>
+      <div id="more" hidden>
+        <ul class="others" id="others"></ul>
+        <div class="seen"><img id="seen" alt="Your drawing as the model sees it, 28 by 28 pixels"><span>Your drawing at 28 &times; 28 pixels, the size the model sees</span></div>
+        <h2>Most similar doodles</h2>
+        <p class="vote" id="vote"></p>
+        <ul class="grid" id="grid"></ul>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer"></footer>
+</div>
+
+<script>
+const pad = document.getElementById('pad');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const undoBtn = document.getElementById('undo');
+const clearBtn = document.getElementById('clear');
+const hint = document.getElementById('hint');
+const INK = '#1B2A41';
+
+let strokes = [];          // each stroke = [[x, y], ...] in CSS pixels
+let current = null;
+let requestId = 0;
+let total = 0;
+
+function sizeCanvas() {
+  const r = pad.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.round(r.width * dpr);
+  canvas.height = Math.round(r.height * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  redraw();
+}
+
+function drawStroke(s) {
+  ctx.strokeStyle = INK; ctx.fillStyle = INK;
+  ctx.lineWidth = 9; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  if (s.length === 1) {
+    ctx.beginPath(); ctx.arc(s[0][0], s[0][1], 4.5, 0, Math.PI * 2); ctx.fill(); return;
+  }
+  ctx.beginPath(); ctx.moveTo(s[0][0], s[0][1]);
+  for (let i = 1; i < s.length; i++) ctx.lineTo(s[i][0], s[i][1]);
+  ctx.stroke();
+}
+
+function redraw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  strokes.forEach(drawStroke);
+  if (current) drawStroke(current);
+  const empty = strokes.length === 0 && !current;
+  hint.hidden = !empty;
+  undoBtn.disabled = clearBtn.disabled = strokes.length === 0;
+}
+
+function point(e) {
+  const r = pad.getBoundingClientRect();
+  return [Math.round((e.clientX - r.left) * 10) / 10, Math.round((e.clientY - r.top) * 10) / 10];
+}
+
+pad.addEventListener('pointerdown', e => {
+  pad.setPointerCapture(e.pointerId);
+  current = [point(e)];
+  redraw();
+});
+pad.addEventListener('pointermove', e => {
+  if (!current) return;
+  const p = point(e), last = current[current.length - 1];
+  if (Math.hypot(p[0] - last[0], p[1] - last[1]) >= 2) { current.push(p); redraw(); }
+});
+function endStroke() {
+  if (!current) return;
+  strokes.push(current); current = null; redraw(); search();
+}
+pad.addEventListener('pointerup', endStroke);
+pad.addEventListener('pointercancel', endStroke);
+
+undoBtn.onclick = () => { strokes.pop(); redraw(); strokes.length ? search() : reset(); };
+clearBtn.onclick = () => { strokes = []; redraw(); reset(); };
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && strokes.length) { e.preventDefault(); undoBtn.click(); }
+});
+window.addEventListener('resize', sizeCanvas);
+
+function reset() {
+  requestId++;
+  document.getElementById('answer').innerHTML =
+    '<p class="idle">The model\'s guess appears here after each stroke you draw.</p>';
+  document.getElementById('more').hidden = true;
+}
+
+function el(tag, props = {}, kids = []) {
+  const n = document.createElement(tag);
+  Object.assign(n, props);
+  kids.forEach(k => n.append(k));
+  return n;
+}
+const pct = p => p * 100 >= 99.5 ? 'over 99%' : p * 100 < 0.5 ? 'under 1%' : Math.round(p * 100) + '%';
+
+async function search() {
+  const id = ++requestId;
+  try {
+    const res = await fetch('/api/search', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({strokes})
+    });
+    const data = await res.json();
+    if (id !== requestId) return;                       // a newer stroke already asked
+    if (!res.ok) throw new Error(data.error || 'The search failed.');
+    show(data);
+  } catch (err) {
+    if (id !== requestId) return;
+    document.getElementById('answer').innerHTML = '';
+    document.getElementById('answer').append(el('p', {className: 'error',
+      textContent: 'Could not reach the model. Check that search_app.py is still running, then draw again.'}));
+    document.getElementById('more').hidden = true;
+  }
+}
+
+function show(d) {
+  const top = d.guesses[0];
+  const answer = document.getElementById('answer');
+  answer.innerHTML = '';
+  answer.append(
+    el('p', {className: 'guess', textContent: top.label}),
+    el('p', {className: 'sure', textContent: `${pct(top.prob)} sure`})
+  );
+
+  const others = document.getElementById('others');
+  others.innerHTML = '';
+  d.guesses.slice(1).forEach(g => {
+    const bar = el('div', {className: 'bar'}, [el('span')]);
+    bar.firstChild.style.width = Math.max(1, g.prob * 100) + '%';
+    others.append(el('li', {}, [el('span', {textContent: g.label}), bar,
+                                 el('span', {className: 'pct', textContent: pct(g.prob)})]));
+  });
+
+  document.getElementById('seen').src = d.seen;
+
+  const v = d.vote;
+  const agree = v.label === top.label;
+  document.getElementById('vote').textContent =
+    `${v.count} of the ${v.of} closest drawings among ${total.toLocaleString()} are labelled ${v.label}` +
+    (agree ? ', agreeing with the model.' : `, while the model says ${top.label}.`);
+
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  d.neighbours.forEach(n => {
+    grid.append(el('li', {className: n.label === top.label ? '' : 'other'}, [
+      el('img', {src: n.image, alt: `A doodle labelled ${n.label}`}),
+      el('span', {textContent: n.label})
+    ]));
+  });
+  document.getElementById('more').hidden = false;
+}
+
+fetch('/api/info').then(r => r.json()).then(info => {
+  total = info.count;
+  const list = document.getElementById('classes');
+  info.classes.forEach(c => list.append(el('li', {textContent: c})));
+  document.getElementById('intro').textContent =
+    `Draw one of these ${info.classes.length} things. The model names your drawing and finds ` +
+    `the most similar doodles among ${info.count.toLocaleString()} test drawings.`;
+  document.getElementById('footer').textContent =
+    `Model: ${info.model}. Searching: ${info.data}.`;
+}).catch(() => {
+  document.getElementById('intro').textContent =
+    'Could not reach the model. Start it with "python search_app.py", then reload this page.';
+});
+
+sizeCanvas();
+</script>
+</body>
+</html>
